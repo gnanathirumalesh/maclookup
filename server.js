@@ -1,12 +1,14 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');
+
 const app = express();
-const cors = require('cors')
-const port = process.env.PORT || 3000;;
+const port = process.env.PORT || 3000;
 
 // Middleware to parse JSON data
 app.use(express.json());
-app.use(cors())
+app.use(cors());
+
 app.get('/mac/:macAddress', async (req, res) => {
   try {
     const macAddress = req.params.macAddress;
@@ -49,8 +51,11 @@ app.get('/mac/:macAddress', async (req, res) => {
       isPrivate,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: 'Internal Server Error' });
+    console.error(error.message); // Log the error message
+    res.status(error.response ? error.response.status : 500).json({
+      success: false,
+      error: error.message || 'Internal Server Error',
+    });
   }
 });
 
